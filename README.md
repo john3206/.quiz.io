@@ -9,12 +9,6 @@ Um jogo educativo interativo sobre segurança no trabalho, desenvolvido para con
 ![image](https://github.com/user-attachments/assets/acaa0995-0e8a-4d70-ae25-fec9cd9a126b)
 ![image](https://github.com/user-attachments/assets/9a691de2-d456-4714-8f8c-40ccfa3cfd48)
 
-
-
-
-
-
-
 ## *Funcionalidades Principais* ✨
 
 - *10 regras de segurança* com 5 perguntas cada
