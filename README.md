@@ -2,7 +2,18 @@
 
 Um jogo educativo interativo sobre segurança no trabalho, desenvolvido para conscientização e treinamento de equipes.
 
-![Preview do Quiz](https://via.placeholder.com/800x400.png?text=Quiz+Segurança+no+Trabalho)
+![image](https://github.com/user-attachments/assets/651d0e01-5f0b-4458-9ac1-72336c3be98c)
+![image](https://github.com/user-attachments/assets/a2ef4992-118d-4b3a-8526-299f4d812d13)
+![image](https://github.com/user-attachments/assets/d099fb44-5fa1-47d9-9c6d-685c67f4a967)
+![image](https://github.com/user-attachments/assets/4f3375c9-d3f8-4c1a-a660-a544f257f409)
+![image](https://github.com/user-attachments/assets/acaa0995-0e8a-4d70-ae25-fec9cd9a126b)
+![image](https://github.com/user-attachments/assets/9a691de2-d456-4714-8f8c-40ccfa3cfd48)
+
+
+
+
+
+
 
 ## *Funcionalidades Principais* ✨
 
