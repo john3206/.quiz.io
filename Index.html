@@ -1,0 +1,1892 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>10 Regras de Ouro - Segurança no Trabalho</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Modal de seleção de jogador */
+        .player-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 2000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .player-container {
+            background-color: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            padding: 20px;
+        }
+        
+        .player-title {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .player-card {
+            background-color: #ecf0f1;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .player-card:hover {
+            background-color: #3498db;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .player-card.selected {
+            background-color: #2c3e50;
+            color: white;
+            border: 2px solid #3498db;
+        }
+        
+        .start-game-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        
+        .start-game-btn:hover {
+            background-color: #2ecc71;
+        }
+        
+        .start-game-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        
+        /* Estilos existentes */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+        
+        .rule-card {
+            background-color: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .rule-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+        }
+        
+        .rule-card.locked {
+            filter: grayscale(80%);
+            cursor: not-allowed;
+        }
+        
+        .rule-card.locked::after {
+            content: "Bloqueado";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .rule-card.completed {
+            border: 3px solid #27ae60;
+        }
+        
+        .rule-number {
+            background-color: #e74c3c;
+            color: white;
+            padding: 10px 15px;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .rule-content {
+            padding: 20px;
+        }
+        
+        .rule-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #2c3e50;
+        }
+        
+        .rule-description {
+            color: #7f8c8d;
+            line-height: 1.5;
+        }
+        
+        .rule-score {
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .game-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 1000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-container {
+            background-color: white;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        
+        .game-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+        
+        .game-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .player-name-display {
+            font-size: 1rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        
+        .game-score {
+            font-weight: bold;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        .question-container {
+            padding: 25px;
+        }
+        
+        .timer-container {
+            height: 10px;
+            background-color: #ecf0f1;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .timer-bar {
+            height: 100%;
+            width: 100%;
+            background-color: #2ecc71;
+            transition: width 1s linear, background-color 0.3s;
+        }
+        
+        .question {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            color: #2c3e50;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .option {
+            padding: 15px;
+            background-color: #ecf0f1;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: left;
+            transition: background-color 0.3s;
+        }
+        
+        .option:hover {
+            background-color: #d6eaf8;
+        }
+        
+        .option.correct {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .option.incorrect {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .next-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            display: none;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+        }
+        
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .feedback {
+            display: none;
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        
+        .progress-bar {
+            height: 5px;
+            background-color: #ecf0f1;
+            margin-top: 15px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background-color: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .phase-complete {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+        
+        .phase-complete h2 {
+            color: #27ae60;
+            margin-bottom: 15px;
+        }
+        
+        .phase-complete p {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+        
+        /* Ranking */
+        .ranking-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .ranking-title {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            text-align: center;
+        }
+        
+        .ranking-list {
+            list-style-type: none;
+        }
+        
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+        
+        .ranking-position {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .ranking-player {
+            flex-grow: 1;
+            padding: 0 15px;
+        }
+        
+        .ranking-score {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+        
+        .current-player {
+            background-color: #d6eaf8;
+            border-left: 4px solid #3498db;
+        }
+        
+        /* Admin Modal */
+        .admin-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.8);
+            z-index: 3000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .admin-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+        }
+        
+        .admin-rule-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 5px;
+        }
+        
+        /* Tela de senha */
+        #password-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 10000;
+            color: white;
+        }
+
+        #password-screen h1 {
+            font-size: 2em;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+
+        #passwordInput {
+            padding: 10px;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+        }
+
+        #passwordSubmit {
+            padding: 10px 20px;
+            font-size: 1.1em;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 80%;
+            max-width: 300px;
+        }
+
+        #passwordError {
+            color: red;
+            margin-top: 10px;
+            display: none;
+        }
+
+        /* Splash Screen */
+        #splash-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: black;
+            z-index: 9999;
+            color: white;
+        }
+
+        #splash-screen h1 {
+            font-size: 4em;
+            color: #fff;
+            text-shadow: 0 0 10px red, 0 0 20px yellow;
+            animation: pulse 1s infinite;
+        }
+
+        #splash-screen h2 {
+            font-size: 2em;
+            color: red;
+            text-shadow: 0 0 5px black;
+        }
+
+        #splash-progress-container {
+            width: 80%;
+            max-width: 600px;
+            height: 16px;
+            background: #333;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #fff;
+            margin-top: 30px;
+        }
+
+        #splash-progress {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, red, yellow);
+            border-radius: 8px;
+        }
+
+        #splash-status {
+            font-size: 1.2em;
+            color: #fff;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .rules-grid, .players-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .game-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            #splash-screen h1 {
+                font-size: 2.5em;
+            }
+
+            #splash-screen h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Tela de senha -->
+    <div id="password-screen">
+      <h1>Acesso Restrito</h1>
+      <input type="password" id="passwordInput" placeholder="Digite a senha">
+      <button id="passwordSubmit">Acessar</button>
+      <p id="passwordError">Senha incorreta!</p>
+    </div>
+
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <h1>QUIZ</h1>
+        <h2>Segurança do Trabalho</h2>
+        <div id="splash-progress-container">
+            <div id="splash-progress"></div>
+        </div>
+        <div id="splash-status">Carregando... 0%</div>
+    </div>
+
+    <!-- Conteúdo principal -->
+    <header class="header">
+        <h1>10 Regras de Ouro da Segurança</h1>
+        <p>Um jogo educativo sobre as principais regras de segurança no trabalho</p>
+        <button id="adminBtn" style="position:absolute; top:10px; right:10px; background:#e74c3c; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">Admin</button>
+    </header>
+    <div class="main-container">
+        <div class="rules-grid" id="rulesGrid">
+            <!-- Cartões das regras serão gerados dinamicamente -->
+        </div>
+        <div class="ranking-container">
+            <h2 class="ranking-title">Ranking</h2>
+            <ul class="ranking-list" id="rankingList">
+                <!-- Ranking será carregado do Firebase -->
+                <li>Carregando ranking...</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Modal de seleção de jogador -->
+    <div class="player-modal" id="playerModal">
+        <div class="player-container">
+            <h2 class="player-title">Selecione seu jogador</h2>
+            <div class="players-grid" id="playersGrid">
+                <!-- Jogadores serão adicionados dinamicamente -->
+            </div>
+            <button class="start-game-btn" disabled id="startGameBtn">Iniciar Jogo</button>
+        </div>
+    </div>
+
+    <!-- Modal do jogo -->
+    <div class="game-modal" id="gameModal">
+        <div class="game-container">
+            <div class="game-header">
+                <div>
+                    <div class="game-title" id="gameTitle">Regra de Ouro #1</div>
+                    <div class="player-name-display" id="playerNameDisplay">Jogador: </div>
+                </div>
+                <div>
+                    <div class="game-score" id="gameScore">Pontos: 0</div>
+                </div>
+                <button class="close-btn" id="closeGame">×</button>
+            </div>
+            <div class="progress-bar">
+                <div class="progress" id="progressBar"></div>
+            </div>
+            <div class="question-container" id="questionContainer">
+                <div class="timer-container">
+                    <div class="timer-bar" id="timerBar"></div>
+                </div>
+                <div class="question" id="question"></div>
+                <div class="options" id="options"></div>
+                <div class="feedback" id="feedback"></div>
+                <button class="next-btn" id="nextBtn">Próxima Pergunta</button>
+            </div>
+            <div class="phase-complete" id="phaseComplete">
+                <h2>Fase Completa!</h2>
+                <p id="completeMessage">Você acertou X de Y perguntas!</p>
+                <button class="next-btn" id="continueBtn">Continuar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de administração -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-container">
+            <h2 style="text-align:center; margin-bottom:20px;">Painel de Administração</h2>
+            <div id="adminRulesList" style="margin-bottom:20px;">
+                <!-- Lista de regras será gerada aqui -->
+            </div>
+            <button id="clearRankingBtn" style="width:100%; padding:10px; background:#e74c3c; color:white; border:none; border-radius:5px; cursor:pointer; margin-bottom:10px;">Limpar Ranking</button>
+            <button id="closeAdminBtn" style="width:100%; padding:10px; background:#2c3e50; color:white; border:none; border-radius:5px; cursor:pointer;">Fechar</button>
+        </div>
+    </div>
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js";
+        import { getDatabase, ref, set, onValue, orderByChild, limitToLast, serverTimestamp, remove } from "https://www.gstatic.com/firebasejs/9.6.10/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyAmmmO3HjEgMkP7JdP96TolneSrgBFq3vw",
+            authDomain: "quiz-regra-de-ouro.firebaseapp.com",
+            databaseURL: "https://quiz-regra-de-ouro-default-rtdb.firebaseio.com",
+            projectId: "quiz-regra-de-ouro",
+            storageBucket: "quiz-regra-de-ouro.appspot.com",
+            messagingSenderId: "799366128122",
+            appId: "1:799366128122:web:259d85d5d4c51c315e0443"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Variáveis globais
+        let gameData = {
+            rules: [],
+            currentRule: 0,
+            currentQuestion: 0,
+            correctAnswers: 0,
+            totalScore: 0,
+            currentPlayer: null,
+            playerId: null
+        };
+
+        let selectedPlayer = null;
+        let rankingData = [];
+        let timer;
+        let timeLeft;
+        let adminMode = false;
+        const CORRECT_PASSWORD = "1303";
+        const ADMIN_PASSWORD = "admin123"; // Senha separada para admin
+
+        // Lista de jogadores
+        const players = [
+            "John", "Vitor Costa", "Micael", "Gabriela", "Manuela", 
+            "Evelin", "Fernanda", "Ana Clara", "Eduarda", "Vitória",
+            "Rayane", "Dara", "Maicon", "Leonardo", "Rogério",
+            "Isabel", "Ariele", "Vitor Thomeo", "Juliana", "André",
+            "Henrique", "Alifer", "Ronaldo", "Claudemir"
+        ];
+
+        // Dados das regras com perguntas
+        const rulesData = [
+            {
+                id: 1,
+                title: "Briga entre cães",
+                description: "Prevenção e manejo de conflitos entre cães no ambiente de trabalho",
+                completed: false,
+                questions: [
+                    {
+                        question: "O que pode causar uma briga entre dois cães?",
+                        options: [
+                            "Vontade de brincar",
+                            "Competição por comida ou brinquedo",
+                            "Sono excessivo",
+                            "Cansaço após o passeio"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Qual é a forma mais segura de separar cães brigando?",
+                        options: [
+                            "Gritar com eles",
+                            "Bater em um dos cães",
+                            "Jogar água neles ou usar uma barreira",
+                            "Puxar pela coleira com força"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Cães machos não castrados têm maior risco de brigar por:",
+                        options: [
+                            "Território e dominância",
+                            "Fome",
+                            "Medo do veterinário",
+                            "Falta de brinquedos"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Um sinal de que uma briga pode acontecer é:",
+                        options: [
+                            "Cães deitando juntos",
+                            "Rosnado, olhar fixo e postura tensa",
+                            "Cheirando o chão",
+                            "Latindo para o dono"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Qual atitude pode prevenir brigas em locais com vários cães?",
+                        options: [
+                            "Alimentá-los todos juntos",
+                            "Permitir brinquedos à vontade",
+                            "Supervisão constante e retirada de objetos disputados",
+                            "Soltar todos ao mesmo tempo"
+                        ],
+                        answer: 2
+                    }
+                ],
+                score: 0,
+                unlocked: true // Primeira regra desbloqueada por padrão
+            },
+            {
+                id: 2,
+                title: "Vestimentas apropriadas",
+                description: "Equipamentos de proteção individual e vestimentas adequadas para trabalho com animais",
+                completed: false,
+                questions: [
+                    {
+                        question: "Qual combinação é mais indicada para contenção de cães agressivos?",
+                        options: [
+                            "Jaqueta jeans, calça de algodão e tênis",
+                            "Uniforme leve, calça legging e crocs",
+                            "Camisa resistente, calça reforçada e botas de couro ou PVC",
+                            "Jaleco hospitalar e sapatilha de borracha"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Qual EPI é essencial ao lidar com produtos químicos na limpeza de baias?",
+                        options: [
+                            "Máscara de tecido comum",
+                            "Boné com viseira",
+                            "Avental impermeável e luvas de borracha longa",
+                            "Luvas cirúrgicas descartáveis"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Por que não se deve usar bermudas em áreas com animais?",
+                        options: [
+                            "Queimaduras solares",
+                            "Riscos físicos e biológicos como mordidas e fezes",
+                            "Estética inadequada",
+                            "Estilo rural"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Calçados altos e fechados ajudam a evitar:",
+                        options: [
+                            "Picadas de cobras e aranhas",
+                            "Conforto ao andar",
+                            "Sujeira nos calçados",
+                            "Perda do sapato"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Qual EPI ajuda na prevenção de zoonoses?",
+                        options: [
+                            "Óculos de sol",
+                            "Camisa de algodão",
+                            "Máscara PFF2, avental impermeável e luvas longas",
+                            "Bandana no rosto"
+                        ],
+                        answer: 2
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 3,
+                title: "Acidentes com pets",
+                description: "Prevenção e procedimentos em caso de acidentes envolvendo animais",
+                completed: false,
+                questions: [
+                    {
+                        question: "Qual é a primeira atitude ao presenciar um cão se enforcando com a guia?",
+                        options: [
+                            "Puxar com força para soltá-lo",
+                            "Soltar a coleira com calma e verificar respiração",
+                            "Gritar por ajuda",
+                            "Jogar água no animal"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Um acidente comum em clínicas veterinárias é:",
+                        options: [
+                            "Cães dormindo demais",
+                            "Queda de animais da mesa de atendimento",
+                            "Arranhões em paredes",
+                            "Comer ração de outro animal"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Para evitar mordidas durante o banho é recomendado:",
+                        options: [
+                            "Usar brinquedos",
+                            "Banhar sempre em grupo",
+                            "Usar focinheira e manter a calma",
+                            "Lavar rapidamente"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Um risco ao passear com animais em áreas públicas é:",
+                        options: [
+                            "Eles correrem demais",
+                            "Eles fugirem e se perderem ou serem atropelados",
+                            "Encontrarem outros animais",
+                            "Sujarem a rua"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Para evitar quedas de gatos em clínicas, deve-se:",
+                        options: [
+                            "Deixar as janelas abertas",
+                            "Carregar no colo sem contenção",
+                            "Manter o animal contido em caixa de transporte ou grade",
+                            "Segurar pela pele do pescoço"
+                        ],
+                        answer: 2
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 4,
+                title: "Ocorrência de pragas",
+                description: "Identificação e controle de pragas no ambiente de trabalho",
+                completed: false,
+                questions: [
+                    {
+                        question: "O que deve ser feito ao encontrar uma praga no ambiente de trabalho?",
+                        options: [
+                            "Ignorar e seguir trabalhando",
+                            "Avisar imediatamente o responsável",
+                            "Matar a praga",
+                            "Usar inseticida sem orientação"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Qual é o principal risco de pragas como ratos em ambientes de trabalho?",
+                        options: [
+                            "Contaminação de alimentos",
+                            "Mau cheiro",
+                            "Destruição de móveis",
+                            "Perda de tempo"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Como prevenir a infestação de pragas em ambientes fechados?",
+                        options: [
+                            "Deixar comida exposta",
+                            "Manter o ambiente limpo e vedar frestas",
+                            "Usar repelentes constantemente",
+                            "Contratar um exterminador apenas quando necessário"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Qual é a melhor maneira de lidar com a presença de insetos no ambiente?",
+                        options: [
+                            "Espantar com a mão",
+                            "Utilizar armadilhas ou produtos específicos",
+                            "Ignorar a presença",
+                            "Colocar veneno em locais acessíveis a todos"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Quais pragas são comuns em ambientes urbanos?",
+                        options: [
+                            "Ratos e baratas",
+                            "Aves e morcegos",
+                            "Cães e gatos",
+                            "Insetos aquáticos"
+                        ],
+                        answer: 0
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 5,
+                title: "Transporte dos pets",
+                description: "Normas e procedimentos seguros para transporte de animais",
+                completed: false,
+                questions: [
+                    {
+                        question: "Qual a melhor forma de transportar um pet no carro?",
+                        options: [
+                            "Sem nenhum equipamento de segurança",
+                            "Em uma caixa de transporte ou cinto de segurança para animais",
+                            "Solto no banco traseiro",
+                            "No colo do motorista"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Quais cuidados tomar ao transportar um pet de avião?",
+                        options: [
+                            "Levar na cabine sem qualquer contenção",
+                            "Colocar em uma caixa de transporte adequada para o transporte aéreo",
+                            "Não há necessidade de cuidados especiais",
+                            "Deixar o pet na área de carga sem vigilância"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Qual é o impacto de transportar um pet de forma inadequada?",
+                        options: [
+                            "Pode causar estresse no animal",
+                            "Não há impacto, pois o animal está acostumado",
+                            "O animal pode se acostumar",
+                            "Nenhuma das alternativas anteriores"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Quais itens são essenciais ao transportar um pet em um carro?",
+                        options: [
+                            "Somente comida e água",
+                            "Caixa de transporte e água",
+                            "Roupas do pet",
+                            "Somente brinquedos"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "O que deve ser verificado antes de transportar um pet em viagens longas?",
+                        options: [
+                            "Se o pet tem o passaporte em dia",
+                            "Se o pet está bem alimentado e descansado",
+                            "Se o pet está com sono",
+                            "Se o pet não vai incomodar durante a viagem"
+                        ],
+                        answer: 1
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 6,
+                title: "Área de pedestres",
+                description: "Segurança e organização de áreas de circulação de pedestres",
+                completed: false,
+                questions: [
+                    {
+                        question: "Como garantir a segurança de pedestres em áreas de trabalho?",
+                        options: [
+                            "Não há necessidade de cuidados",
+                            "Sinalizar adequadamente as áreas de pedestre",
+                            "Deixar os pedestres circularem livremente",
+                            "Isolar a área para pedestres apenas à noite"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Qual é a melhor forma de os veículos se comportarem nas áreas de pedestres?",
+                        options: [
+                            "Acelerar para passar mais rápido",
+                            "Parar e dar passagem para pedestres",
+                            "Evitar que pedestres cruzem a rua",
+                            "Não respeitar as faixas de pedestres"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "O que deve ser feito se um pedestre estiver atravessando fora da faixa?",
+                        options: [
+                            "Ignorar",
+                            "Alertar gentilmente o pedestre sobre a faixa correta",
+                            "Acelerar para evitar o atraso",
+                            "Esperar que o pedestre se mova rapidamente"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Quais sinais devem ser utilizados para indicar uma área de pedestre?",
+                        options: [
+                            "Semáforos, placas e faixas de segurança",
+                            "Apenas placas",
+                            "Apenas faixas no chão",
+                            "Não é necessário sinalizar"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "O que fazer quando a área de pedestre está obstruída?",
+                        options: [
+                            "Deixar os pedestres passarem por onde conseguirem",
+                            "Avisar imediatamente a autoridade responsável para remover o obstáculo",
+                            "Ignorar",
+                            "Pedir para os pedestres usarem outra rua"
+                        ],
+                        answer: 1
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 7,
+                title: "Fluxo de pessoas",
+                description: "Gestão e organização do fluxo de pessoas em ambientes de trabalho",
+                completed: false,
+                questions: [
+                    {
+                        question: "Qual é a principal preocupação ao gerenciar o fluxo de pessoas em ambientes fechados?",
+                        options: [
+                            "Evitar o congestionamento e garantir a segurança",
+                            "Manter a porta aberta para mais ventilação",
+                            "Aumentar a quantidade de móveis",
+                            "Ignorar as rotas de evacuação"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Como os corredores devem ser organizados para facilitar o fluxo de pessoas?",
+                        options: [
+                            "Sem obstruções e com sinalização clara",
+                            "Com cadeiras e mesas",
+                            "De forma que as pessoas tenham que desviar",
+                            "Com tapetes decorativos"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "O que deve ser feito quando há muita concentração de pessoas em uma área?",
+                        options: [
+                            "Esperar que se dispersem naturalmente",
+                            "Implementar medidas para distribuir melhor as pessoas",
+                            "Pedir que as pessoas saiam imediatamente",
+                            "Ignorar o fluxo de pessoas"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Como a sinalização pode ajudar a organizar o fluxo de pessoas?",
+                        options: [
+                            "Indicar áreas de acesso e saída",
+                            "Criar um caminho para o fluxo de pessoas",
+                            "Facilitar a movimentação sem confusão",
+                            "Todas as anteriores"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        question: "O que é essencial para garantir a segurança das pessoas em áreas com fluxo intenso?",
+                        options: [
+                            "Evitar bloqueios nas saídas de emergência",
+                            "Criar um único ponto de entrada",
+                            "Colocar obstáculos nas vias de evacuação",
+                            "Nenhuma das alternativas"
+                        ],
+                        answer: 0
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 8,
+                title: "Atividades de bem-estar",
+                description: "Promoção de saúde e qualidade de vida no ambiente de trabalho",
+                completed: false,
+                questions: [
+                    {
+                        question: "Como atividades de bem-estar podem impactar a saúde mental dos colaboradores?",
+                        options: [
+                            "Reduzindo o estresse",
+                            "Causando fadiga",
+                            "Aumentando a ansiedade",
+                            "Não tendo impacto"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Qual tipo de atividade de bem-estar é mais eficaz para melhorar o ambiente de trabalho?",
+                        options: [
+                            "Yoga e meditação",
+                            "Exercícios físicos",
+                            "Programas de alimentação saudável",
+                            "Todas as alternativas"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        question: "Como incentivar a participação em atividades de bem-estar no ambiente de trabalho?",
+                        options: [
+                            "Oferecendo programas acessíveis e flexíveis",
+                            "Exigindo a participação obrigatória",
+                            "Punindo quem não participa",
+                            "Não oferecendo nenhuma atividade"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Qual é a importância de programas de bem-estar nas empresas?",
+                        options: [
+                            "Melhorar a saúde e aumentar a produtividade",
+                            "Diminuir o tempo de trabalho",
+                            "Reduzir os salários",
+                            "Aumentar a carga de trabalho"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Quais atividades de bem-estar podem ser realizadas durante o expediente?",
+                        options: [
+                            "Meditação e alongamento",
+                            "Exercícios físicos intensos",
+                            "Tarefas extras de trabalho",
+                            "Nenhuma atividade é permitida"
+                        ],
+                        answer: 0
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 9,
+                title: "Detecção de incêndio",
+                description: "Sistemas e procedimentos para detecção e prevenção de incêndios",
+                completed: false,
+                questions: [
+                    {
+                        question: "Qual é a função principal de um sistema de detecção de incêndio?",
+                        options: [
+                            "Identificar fontes de calor e fumaça",
+                            "Exibir a localização do incêndio",
+                            "Alertar as pessoas e acionar os sistemas de combate",
+                            "Todas as alternativas"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        question: "O que deve ser feito quando o alarme de incêndio dispara?",
+                        options: [
+                            "Ficar onde está e esperar",
+                            "Seguir as rotas de evacuação",
+                            "Desligar o alarme",
+                            "Ignorar o alarme se não houver fumaça"
+                        ],
+                        answer: 1
+                    },
+                    {
+                        question: "Quais são os tipos mais comuns de detectores de incêndio?",
+                        options: [
+                            "Detector de fumaça",
+                            "Detector de calor",
+                            "Detector de monóxido de carbono",
+                            "Todos os itens acima"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        question: "Onde os detectores de incêndio devem ser instalados?",
+                        options: [
+                            "Apenas no teto",
+                            "Em áreas de risco",
+                            "Em todas as áreas do prédio",
+                            "Em áreas sem acesso"
+                        ],
+                        answer: 2
+                    },
+                    {
+                        question: "Como garantir o bom funcionamento de um sistema de detecção de incêndio?",
+                        options: [
+                            "Realizando manutenção regular",
+                            "Deixando os dispositivos sujos",
+                            "Instalando dispositivos em locais de difícil acesso",
+                            "Não realizando testes de funcionamento"
+                        ],
+                        answer: 0
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            },
+            {
+                id: 10,
+                title: "Incêndio/Desastres naturais",
+                description: "Preparação e resposta a incêndios e desastres naturais",
+                completed: false,
+                questions: [
+                    {
+                        question: "Qual é a principal medida de prevenção contra incêndios em áreas florestais?",
+                        options: [
+                            "Criar barreiras de contenção",
+                            "Aumentar a quantidade de vegetação",
+                            "Proibir o uso de equipamentos de combate ao fogo",
+                            "Nenhuma das alternativas"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Qual é o primeiro passo em caso de incêndio florestal?",
+                        options: [
+                            "Evacuar a área e buscar abrigo seguro",
+                            "Ajudar a apagar o fogo",
+                            "Ignorar o incêndio",
+                            "Continuar a atividade normalmente"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Quais são os principais fatores que contribuem para o aumento do risco de incêndios florestais?",
+                        options: [
+                            "Clima quente e seco",
+                            "Baixa umidade",
+                            "Atividades humanas, como queimadas",
+                            "Todos os itens acima"
+                        ],
+                        answer: 3
+                    },
+                    {
+                        question: "O que deve ser feito para evitar a propagação de incêndios em áreas urbanas?",
+                        options: [
+                            "Limpeza de terrenos e poda de árvores",
+                            "Construção de prédios altos",
+                            "Ignorar a manutenção das instalações elétricas",
+                            "Não permitir a instalação de hidrantes"
+                        ],
+                        answer: 0
+                    },
+                    {
+                        question: "Em caso de desastre natural como um terremoto, qual é a ação mais importante a ser tomada?",
+                        options: [
+                            "Procurar abrigo embaixo de móveis resistentes",
+                            "Sair correndo para a rua",
+                            "Subir em árvores",
+                            "Ignorar os alertas de segurança"
+                        ],
+                        answer: 0
+                    }
+                ],
+                score: 0,
+                unlocked: false
+            }
+        ];
+
+        // Elementos do DOM
+        const elements = {
+            rulesGrid: document.getElementById('rulesGrid'),
+            playerModal: document.getElementById('playerModal'),
+            playersGrid: document.getElementById('playersGrid'),
+            startGameBtn: document.getElementById('startGameBtn'),
+            gameModal: document.getElementById('gameModal'),
+            closeGameBtn: document.getElementById('closeGame'),
+            gameTitle: document.getElementById('gameTitle'),
+            playerNameDisplay: document.getElementById('playerNameDisplay'),
+            gameScore: document.getElementById('gameScore'),
+            progressBar: document.getElementById('progressBar'),
+            questionContainer: document.getElementById('questionContainer'),
+            questionElement: document.getElementById('question'),
+            optionsElement: document.getElementById('options'),
+            nextBtn: document.getElementById('nextBtn'),
+            phaseComplete: document.getElementById('phaseComplete'),
+            completeMessage: document.getElementById('completeMessage'),
+            continueBtn: document.getElementById('continueBtn'),
+            rankingList: document.getElementById('rankingList'),
+            feedbackElement: document.getElementById('feedback'),
+            timerBar: document.getElementById('timerBar'),
+            adminBtn: document.getElementById('adminBtn'),
+            adminModal: document.getElementById('adminModal'),
+            adminRulesList: document.getElementById('adminRulesList'),
+            closeAdminBtn: document.getElementById('closeAdminBtn'),
+            clearRankingBtn: document.getElementById('clearRankingBtn'),
+            passwordScreen: document.getElementById('password-screen'),
+            passwordInput: document.getElementById('passwordInput'),
+            passwordSubmit: document.getElementById('passwordSubmit'),
+            passwordError: document.getElementById('passwordError'),
+            splashScreen: document.getElementById('splash-screen'),
+            splashBar: document.getElementById('splash-progress'),
+            splashStatus: document.getElementById('splash-status')
+        };
+
+        // Inicialização do jogo
+        function initApp() {
+            elements.passwordScreen.style.display = 'flex';
+            elements.splashScreen.style.display = 'none';
+            
+            setupEventListeners();
+            
+            // Inicializar dados do jogo
+            gameData.rules = JSON.parse(JSON.stringify(rulesData)); // Deep copy
+            
+            // Verificar dados no console (pode remover depois)
+            console.log('Total de regras carregadas:', gameData.rules.length);
+            gameData.rules.forEach(rule => {
+                console.log(`Regra ${rule.id}: ${rule.title} - ${rule.questions.length} perguntas`);
+            });
+        }
+
+        function setupEventListeners() {
+            // Tela de senha
+            elements.passwordSubmit.addEventListener('click', checkPassword);
+            elements.passwordInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') checkPassword();
+            });
+            
+            // Jogo principal
+            elements.startGameBtn.addEventListener('click', startGameWithPlayer);
+            elements.closeGameBtn.addEventListener('click', closeGame);
+            elements.nextBtn.addEventListener('click', nextQuestion);
+            elements.continueBtn.addEventListener('click', continueGame);
+            
+            // Admin
+            elements.adminBtn.addEventListener('click', showAdminPasswordPrompt);
+            elements.closeAdminBtn.addEventListener('click', closeAdminPanel);
+            elements.clearRankingBtn.addEventListener('click', confirmClearRanking);
+        }
+
+        function checkPassword() {
+            if (elements.passwordInput.value === CORRECT_PASSWORD) {
+                elements.passwordError.style.display = 'none';
+                elements.passwordScreen.style.display = 'none';
+                startLoadingScreen();
+            } else {
+                elements.passwordError.style.display = 'block';
+            }
+        }
+
+        function startLoadingScreen() {
+            elements.splashScreen.style.display = 'flex';
+
+            let splashProgress = 0;
+            const frases = [
+                "Use sempre os EPIs adequados!",
+                "Prevenção é o melhor remédio.",
+                "Atenção total evita acidentes.",
+                "Segurança é responsabilidade de todos.",
+                "Cuide de você e dos seus colegas."
+            ];
+
+            const splashInterval = setInterval(() => {
+                splashProgress++;
+                elements.splashBar.style.width = splashProgress + "%";
+                elements.splashStatus.textContent = `Carregando... ${splashProgress}% — ${frases[Math.floor(splashProgress / 20)] || ""}`;
+
+                if (splashProgress >= 100) {
+                    clearInterval(splashInterval);
+                    elements.splashScreen.style.display = "none";
+                    initializeGameFlow();
+                }
+            }, 50);
+        }
+
+        function initializeGameFlow() {
+            generatePlayerCards();
+            generateRuleCards();
+            loadRanking();
+            showPlayerModal();
+        }
+
+        function showPlayerModal() {
+            elements.playerModal.style.display = 'flex';
+            elements.playerContainer.scrollTo(0, 0);
+            selectedPlayer = null;
+            elements.startGameBtn.disabled = true;
+            
+            document.querySelectorAll('.player-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+        }
+
+        function generatePlayerCards() {
+            elements.playersGrid.innerHTML = '';
+            
+            players.forEach(player => {
+                const playerCard = document.createElement('div');
+                playerCard.className = 'player-card';
+                playerCard.textContent = player;
+                playerCard.addEventListener('click', () => selectPlayer(player));
+                elements.playersGrid.appendChild(playerCard);
+            });
+        }
+
+        function selectPlayer(player) {
+            document.querySelectorAll('.player-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            event.target.classList.add('selected');
+            selectedPlayer = player;
+            elements.startGameBtn.disabled = false;
+            
+            elements.startGameBtn.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+
+        function startGameWithPlayer() {
+            if (!selectedPlayer) return;
+            
+            gameData.currentPlayer = selectedPlayer;
+            elements.playerNameDisplay.textContent = `Jogador: ${selectedPlayer}`;
+            
+            // Gerar um ID único para o jogador
+            gameData.playerId = Date.now() + '-' + selectedPlayer.replace(/\s+/g, '-').toLowerCase();
+            
+            elements.playerModal.style.display = 'none';
+            
+            // Verificar se já existe progresso salvo para este jogador
+            checkSavedProgress();
+        }
+
+        function checkSavedProgress() {
+            const playerRef = ref(database, 'players/' + gameData.playerId);
+            
+            onValue(playerRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    // Carregar progresso existente
+                    const savedData = snapshot.val();
+                    gameData.totalScore = savedData.totalScore || 0;
+                    gameData.rules = savedData.rules || gameData.rules;
+                    
+                    // Atualizar a exibição
+                    generateRuleCards();
+                    elements.gameScore.textContent = `Pontos: ${gameData.totalScore}`;
+                } else {
+                    // Novo jogador - inicializar dados
+                    initializeNewPlayer();
+                }
+            }, { onlyOnce: true });
+        }
+
+        function initializeNewPlayer() {
+            gameData.totalScore = 0;
+            gameData.rules.forEach(rule => {
+                rule.completed = false;
+                rule.score = 0;
+                rule.unlocked = rule.id === 1; // Apenas a primeira regra desbloqueada inicialmente
+            });
+            
+            // Salvar jogador no Firebase
+            savePlayerData();
+            
+            // Atualizar a exibição
+            generateRuleCards();
+            elements.gameScore.textContent = `Pontos: ${gameData.totalScore}`;
+        }
+
+        function generateRuleCards() {
+            elements.rulesGrid.innerHTML = '';
+
+            gameData.rules.forEach((rule, index) => {
+                const ruleCard = document.createElement('div');
+                ruleCard.className = 'rule-card';
+
+                // Verificar se a regra está disponível
+                const isAvailable = rule.unlocked || rule.completed || adminMode;
+
+                if (isAvailable) {
+                    if (rule.completed) {
+                        ruleCard.classList.add('completed');
+                    }
+                    ruleCard.addEventListener('click', () => startGame(index));
+                } else {
+                    ruleCard.classList.add('locked');
+                }
+
+                ruleCard.innerHTML = `
+                    <div class="rule-number">Regra #${rule.id}</div>
+                    <div class="rule-content">
+                        <h3 class="rule-title">${rule.title}</h3>
+                        <p class="rule-description">${rule.description}</p>
+                        ${rule.completed ? `<p class="rule-score">Pontuação: ${rule.score}</p>` : ''}
+                    </div>
+                `;
+
+                elements.rulesGrid.appendChild(ruleCard);
+            });
+        }
+
+        function startGame(ruleIndex) {
+            const rule = gameData.rules[ruleIndex];
+            
+            // Verificar se a regra pode ser jogada
+            if (!rule.unlocked && !rule.completed && !adminMode) {
+                alert("Esta regra está bloqueada. O administrador precisa desbloqueá-la.");
+                return;
+            }
+
+            gameData.currentRule = ruleIndex;
+            gameData.currentQuestion = 0;
+            gameData.correctAnswers = 0;
+
+            elements.gameTitle.textContent = `Regra de Ouro #${rule.id}: ${rule.title}`;
+            elements.gameScore.textContent = `Pontos: ${gameData.totalScore}`;
+
+            updateProgress();
+            showQuestion();
+            elements.gameModal.style.display = 'flex';
+        }
+
+        function showQuestion() {
+            const rule = gameData.rules[gameData.currentRule];
+            const question = rule.questions[gameData.currentQuestion];
+            
+            // Verificar se a pergunta existe
+            if (!question) {
+                console.error('Pergunta não encontrada:', gameData.currentQuestion);
+                return;
+            }
+            
+            elements.questionElement.textContent = question.question;
+            elements.optionsElement.innerHTML = '';
+            elements.feedbackElement.style.display = 'none';
+            
+            // Verificar se há opções
+            if (!question.options || question.options.length === 0) {
+                console.error('Nenhuma opção encontrada para a pergunta');
+                return;
+            }
+            
+            // Criar botões para cada opção
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'option';
+                button.textContent = option;
+                button.addEventListener('click', () => {
+                    clearInterval(timer);
+                    selectAnswer(index);
+                });
+                elements.optionsElement.appendChild(button);
+            });
+            
+            elements.nextBtn.style.display = 'none';
+            elements.questionContainer.style.display = 'block';
+            elements.phaseComplete.style.display = 'none';
+            
+            startTimer();
+        }
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 30;
+            updateTimer();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimer();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    timeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const percentage = (timeLeft / 30) * 100;
+            elements.timerBar.style.width = `${percentage}%`;
+            
+            if (timeLeft <= 10) {
+                elements.timerBar.style.backgroundColor = '#e74c3c';
+            } else if (timeLeft <= 20) {
+                elements.timerBar.style.backgroundColor = '#f39c12';
+            } else {
+                elements.timerBar.style.backgroundColor = '#2ecc71';
+            }
+        }
+
+        function timeUp() {
+            const options = elements.optionsElement.querySelectorAll('.option');
+            options.forEach(option => {
+                option.disabled = true;
+            });
+            
+            const rule = gameData.rules[gameData.currentRule];
+            const question = rule.questions[gameData.currentQuestion];
+            options[question.answer].classList.add('correct');
+            
+            showFeedback("Tempo esgotado! A resposta correta foi destacada.", false);
+            elements.nextBtn.style.display = 'block';
+        }
+
+        function showFeedback(message, isCorrect) {
+            elements.feedbackElement.textContent = message;
+            elements.feedbackElement.style.display = 'block';
+            elements.feedbackElement.style.backgroundColor = isCorrect ? '#d4edda' : '#f8d7da';
+            elements.feedbackElement.style.color = isCorrect ? '#155724' : '#721c24';
+            elements.feedbackElement.style.border = isCorrect ? '1px solid #c3e6cb' : '1px solid #f5c6cb';
+        }
+
+        function selectAnswer(selectedIndex) {
+            const rule = gameData.rules[gameData.currentRule];
+            const question = rule.questions[gameData.currentQuestion];
+            const options = elements.optionsElement.querySelectorAll('.option');
+            
+            options.forEach(option => {
+                option.disabled = true;
+            });
+            
+            options[question.answer].classList.add('correct');
+            
+            if (selectedIndex === question.answer) {
+                gameData.correctAnswers++;
+                gameData.totalScore += 10;
+                rule.score += 10;
+                options[selectedIndex].classList.add('correct');
+                showFeedback("Resposta correta! +10 pontos", true);
+            } else {
+                options[selectedIndex].classList.add('incorrect');
+                showFeedback(`Resposta incorreta! A resposta correta era: "${question.options[question.answer]}"`, false);
+            }
+            
+            elements.gameScore.textContent = `Pontos: ${gameData.totalScore}`;
+            elements.nextBtn.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            gameData.currentQuestion++;
+            const rule = gameData.rules[gameData.currentRule];
+            
+            if (gameData.currentQuestion < rule.questions.length) {
+                updateProgress();
+                showQuestion();
+            } else {
+                completeRule();
+            }
+        }
+
+        function completeRule() {
+            const rule = gameData.rules[gameData.currentRule];
+            rule.completed = true;
+            
+            // REMOVIDO O DESBLOQUEIO AUTOMÁTICO DA PRÓXIMA REGRA
+            // if (gameData.currentRule < gameData.rules.length - 1) {
+            //    gameData.rules[gameData.currentRule + 1].unlocked = true;
+            // }
+            
+            elements.completeMessage.textContent = `Você acertou ${gameData.correctAnswers} de ${rule.questions.length} perguntas!`;
+            elements.questionContainer.style.display = 'none';
+            elements.phaseComplete.style.display = 'block';
+            
+            // Salvar progresso no Firebase
+            savePlayerData();
+            updateRanking();
+        }
+
+        function savePlayerData() {
+            const playerRef = ref(database, 'players/' + gameData.playerId);
+            
+            set(playerRef, {
+                name: gameData.currentPlayer,
+                totalScore: gameData.totalScore,
+                rules: gameData.rules,
+                lastUpdated: serverTimestamp()
+            });
+        }
+
+        function updateProgress() {
+            const rule = gameData.rules[gameData.currentRule];
+            const progress = ((gameData.currentQuestion) / rule.questions.length) * 100;
+            elements.progressBar.style.width = `${progress}%`;
+        }
+
+        function closeGame() {
+            elements.gameModal.style.display = 'none';
+            generateRuleCards();
+        }
+
+        function continueGame() {
+            closeGame();
+        }
+
+        function loadRanking() {
+            const rankingRef = ref(database, 'players');
+            
+            onValue(rankingRef, (snapshot) => {
+                rankingData = [];
+                snapshot.forEach(childSnapshot => {
+                    const player = childSnapshot.val();
+                    rankingData.push({
+                        id: childSnapshot.key,
+                        name: player.name,
+                        score: player.totalScore || 0,
+                        rules: player.rules || []
+                    });
+                });
+                
+                // Ordenar por pontuação (decrescente)
+                rankingData.sort((a, b) => b.score - a.score);
+                displayRanking();
+            });
+        }
+
+        function displayRanking() {
+            elements.rankingList.innerHTML = '';
+
+            const jogadoresValidos = rankingData.filter(p => {
+                return p.rules && Array.isArray(p.rules) && p.rules.some(r => r.completed);
+            });
+
+            if (jogadoresValidos.length === 0) {
+                elements.rankingList.innerHTML = '<li>Nenhum dado de ranking disponível ainda</li>';
+                return;
+            }
+
+            jogadoresValidos.forEach((player, index) => {
+                const li = document.createElement('li');
+                li.className = 'ranking-item';
+                if (gameData.playerId && player.id === gameData.playerId) {
+                    li.classList.add('current-player');
+                }
+
+                li.innerHTML = `
+                    <span class="ranking-position">${index + 1}º</span>
+                    <span class="ranking-player">${player.name}</span>
+                    <span class="ranking-score">${player.score} pts</span>
+                `;
+
+                elements.rankingList.appendChild(li);
+            });
+        }
+
+        function updateRanking() {
+            // O ranking é automaticamente atualizado pelo Firebase quando salvamos os dados do jogador
+        }
+
+        function showAdminPasswordPrompt() {
+            const password = prompt("Digite a senha de administrador:");
+            if (password === ADMIN_PASSWORD) {
+                adminMode = true;
+                showAdminPanel();
+            } else {
+                alert("Senha incorreta!");
+            }
+        }
+
+        function showAdminPanel() {
+            elements.adminRulesList.innerHTML = '';
+            
+            gameData.rules.forEach((rule, index) => {
+                const ruleItem = document.createElement('div');
+                ruleItem.className = 'admin-rule-item';
+                
+                ruleItem.innerHTML = `
+                    <span>Regra #${rule.id}: ${rule.title}</span>
+                    <span>Status: ${rule.completed ? 'Completa' : rule.unlocked ? 'Disponível' : 'Bloqueada'}</span>
+                    <button class="toggle-rule-btn" data-index="${index}" style="padding:5px 10px; background:#3498db; color:white; border:none; border-radius:3px; cursor:pointer;">
+                        ${rule.unlocked ? 'Bloquear' : 'Desbloquear'}
+                    </button>
+                `;
+                
+                elements.adminRulesList.appendChild(ruleItem);
+            });
+
+            // Adicionar event listeners aos botões
+            document.querySelectorAll('.toggle-rule-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    toggleRuleAccess(index);
+                });
+            });
+            
+            elements.adminModal.style.display = 'flex';
+        }
+
+        function toggleRuleAccess(index) {
+            if (!adminMode) return;
+
+            gameData.rules[index].unlocked = !gameData.rules[index].unlocked;
+            savePlayerData();
+            showAdminPanel();
+            generateRuleCards();
+        }
+
+        function closeAdminPanel() {
+            elements.adminModal.style.display = 'none';
+            adminMode = false;
+            generateRuleCards();
+        }
+
+        function confirmClearRanking() {
+            const confirmDelete = confirm("Tem certeza que deseja limpar o ranking? Essa ação é irreversível.");
+            if (confirmDelete) {
+                clearRanking();
+            }
+        }
+
+        function clearRanking() {
+            const playersRef = ref(database, 'players');
+            remove(playersRef)
+                .then(() => {
+                    alert("Ranking limpo com sucesso!");
+                    loadRanking();
+                })
+                .catch((error) => {
+                    alert("Erro ao limpar o ranking: " + error.message);
+                });
+        }
+
+        // Inicializar o aplicativo quando a janela carregar
+        window.addEventListener('DOMContentLoaded', initApp);
+    </script>
+</body>
+</html>
